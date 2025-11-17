@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>日本文化語彙チャレンジ</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    select, button { margin: 10px 5px; }
+    .card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #f9f9f9; }
+    .word { font-weight: bold; font-size: 1.2em; }
+    .reps { margin-top: 5px; color: #555; }
+    #cardArea, #challengeArea { margin-top: 20px; }
+    #countdown { font-size: 1.1em; margin-bottom: 10px; color: #333; }
+  </style>
+</head>
+<body>
+  <h1>日本文化語彙チャレンジ</h1>
+  <div id="countdown"></div>
+
+  <div id="topArea">
+    <label for="category">カテゴリーを選択：</label>
+    <select id="category">
+      <option value="food">食文化</option>
+      <option value="history">歴史</option>
+      <option value="tourism">観光</option>
+      <option value="events">年中行事</option>
+      <option value="religion">宗教</option>
+      <option value="arts">芸術</option>
+      <option value="crafts">工芸</option>
+      <option value="society">社会</option>
+      <option value="original">オリジナル</option>
+    </select>
+    <button onclick="startChallenge()">カードを表示</button>
+  </div>
+
+  <div id="cardArea"></div>
+  <div id="challengeArea" style="display:none;">
+    <button onclick="goBack()">戻る</button>
+    <button onclick="nextChallenge()">次のチャレンジ</button>
+  </div>
+
+  <script>
+    let data = {};
+    const examDate = new Date("2025-12-14"); // 試験日を設定
+
+    // カウントダウン表示
+    function updateCountdown() {
+      const today = new Date();
+      const diff = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+      document.getElementById("countdown").textContent = `試験まであと ${diff} 日`;
+    }
+
+    updateCountdown();
+
+    // JSON読み込み
+    fetch("words.json")
+      .then(response => response.json())
+      .then(json => {
+        data = json;
+      });
+
+    function startChallenge() {
+      const category = document.getElementById("category").value;
+      const cards = data[category];
+      if (!cards || cards.length === 0) return;
+
+      const selected = [];
+      while (selected.length < 3) {
+        const random = cards[Math.floor(Math.random() * cards.length)];
+        if (!selected.includes(random)) selected.push(random);
+      }
+
+      const html = selected.map(card => `
+        <div class="card">
+          <div class="word">${card.word}</div>
+          <div class="reps">${card.reps.join("、 ")}</div>
+        </div>
+      `).join("");
+
+      document.getElementById("cardArea").innerHTML = html;
+      document.getElementById("topArea").style.display = "none";
+      document.getElementById("challengeArea").style.display = "block";
+    }
+
+    function goBack() {
+      document.getElementById("cardArea").innerHTML = "";
+      document.getElementById("topArea").style.display = "block";
+      document.getElementById("challengeArea").style.display = "none";
+    }
+
+    function nextChallenge() {
+      goBack();
+      startChallenge();
+    }
+  </script>
+</body>
+</html>
