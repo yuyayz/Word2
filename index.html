@@ -2,19 +2,19 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>日本文化語彙チャレンジ</title>
+  <title>全国通訳案内士二次試験プレゼンテーション</title>
   <style>
     body { font-family: sans-serif; padding: 20px; }
     select, button { margin: 10px 5px; }
-    .card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; background: #f9f9f9; }
+    .card { border: 1px solid #ccc; padding: 10px; margin: 10px 10px; background: #f9f9f9; cursor: pointer; }
     .word { font-weight: bold; font-size: 1.2em; }
-    .reps { margin-top: 5px; color: #555; }
-    #cardArea, #challengeArea { margin-top: 20px; }
+    .reps { margin-top: 10px; color: #555; }
     #countdown { font-size: 1.1em; margin-bottom: 10px; color: #333; }
+    #cardArea, #detailArea, #challengeArea { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>日本文化語彙チャレンジ</h1>
+  <h1>全国通訳案内士二次試験プレゼンテーション</h1>
   <div id="countdown"></div>
 
   <div id="topArea">
@@ -34,25 +34,29 @@
   </div>
 
   <div id="cardArea"></div>
+
   <div id="challengeArea" style="display:none;">
+    <button onclick="nextChallenge()">次のチャレンジ</button>
+  </div>
+
+  <div id="detailArea" style="display:none;">
+    <div id="detailCard"></div>
     <button onclick="goBack()">戻る</button>
     <button onclick="nextChallenge()">次のチャレンジ</button>
   </div>
 
   <script>
     let data = {};
-    const examDate = new Date("2025-12-14"); // 試験日を設定
+    const examDate = new Date("2025-12-14");
 
-    // カウントダウン表示
     function updateCountdown() {
       const today = new Date();
       const diff = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-      document.getElementById("countdown").textContent = `試験まであと ${diff} 日`;
+      document.getElementById("countdown").textContent = `本番まであと ${diff} 日`;
     }
 
     updateCountdown();
 
-    // JSON読み込み
     fetch("words.json")
       .then(response => response.json())
       .then(json => {
@@ -71,25 +75,45 @@
       }
 
       const html = selected.map(card => `
-        <div class="card">
+        <div class="card" onclick="showDetail('${card.word}')">
           <div class="word">${card.word}</div>
-          <div class="reps">${card.reps.join("、 ")}</div>
         </div>
       `).join("");
 
       document.getElementById("cardArea").innerHTML = html;
       document.getElementById("topArea").style.display = "none";
       document.getElementById("challengeArea").style.display = "block";
+      document.getElementById("detailArea").style.display = "none";
+    }
+
+    function showDetail(word) {
+      const category = document.getElementById("category").value;
+      const cards = data[category];
+      const match = cards.find(c => c.word === word);
+      if (!match) return;
+
+      const html = `
+        <div class="card">
+          <div class="word">${match.word}</div>
+          <div class="reps">${match.reps.join("、 ")}</div>
+        </div>
+      `;
+      document.getElementById("detailCard").innerHTML = html;
+      document.getElementById("cardArea").style.display = "none";
+      document.getElementById("challengeArea").style.display = "none";
+      document.getElementById("detailArea").style.display = "block";
     }
 
     function goBack() {
-      document.getElementById("cardArea").innerHTML = "";
-      document.getElementById("topArea").style.display = "block";
-      document.getElementById("challengeArea").style.display = "none";
+      document.getElementById("detailArea").style.display = "none";
+      document.getElementById("cardArea").style.display = "block";
+      document.getElementById("challengeArea").style.display = "block";
     }
 
     function nextChallenge() {
-      goBack();
+      document.getElementById("detailArea").style.display = "none";
+      document.getElementById("cardArea").innerHTML = "";
+      document.getElementById("cardArea").style.display = "block";
       startChallenge();
     }
   </script>
