@@ -102,12 +102,14 @@
 
   <div id="challengeArea" style="display:none;">
     <button onclick="nextChallenge()">次のチャレンジ</button>
+    <button onclick="goToTop()">トップに戻る</button>
   </div>
 
   <div id="detailArea" style="display:none;">
     <div id="detailCard"></div>
     <button onclick="goBack()">戻る</button>
     <button onclick="nextChallenge()">次のチャレンジ</button>
+    <button onclick="goToTop()">トップに戻る</button>
   </div>
 
   <script>
@@ -181,6 +183,16 @@
       document.getElementById("cardArea").style.display = "block";
       startChallenge();
     }
+
+    function goToTop() {
+  document.getElementById("cardArea").innerHTML = "";
+  document.getElementById("detailCard").innerHTML = "";
+  document.getElementById("topArea").style.display = "block";
+  document.getElementById("cardArea").style.display = "none";
+  document.getElementById("challengeArea").style.display = "none";
+  document.getElementById("detailArea").style.display = "none";
+}
+
   </script>
   <footer style="text-align:center; margin-top:2rem; font-size: 1.4em: color: #555; line-height: 1.6;
     ">
@@ -190,6 +202,7 @@
 </p>
 </body>
 </html>
+
 
 
 
