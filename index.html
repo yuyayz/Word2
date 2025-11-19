@@ -133,15 +133,24 @@ document.getElementById("countdown").textContent = `本番(12/14)まであと ${
 updateCountdown();
 
 fetch("words.json")
-.then(response => response.json())
-.then(json => {
-data = json;
-});
+  .then(response => response.json())
+  .then(json => {
+    data = json;
+    document.querySelector("button").disabled = false; // 読み込み完了後に有効化
+  });
 
 function startChallenge() {
-const category = document.getElementById("category").value;
-const cards = data[category];
-if (!cards || cards.length === 0) return;
+  const category = document.getElementById("category").value;
+  const cards = data[category];
+
+  // デバッグ用ログを追加
+  console.log("選択カテゴリ:", category);
+  console.log("カード数:", cards ? cards.length : "なし");
+
+  if (!cards || cards.length === 0) {
+    alert("このカテゴリーにカードがありません");
+    return;
+  }
 
 const selected = [];
 while (selected.length < 3) {
@@ -202,15 +211,15 @@ document.getElementById("detailArea").style.display = "none";
 }
 
 </script>
-  <footer style="text-align:center; margin-top:2rem; font-size: 1.4em: color: #555; line-height: 1.6;
-  <footer style="text-align:center; margin-top:2rem; font-size: 1.6em: color: #555; line-height: 1.6;
-   ">
-operated by Nakahashi<br>
-(LINE: yuya987987)<br>
-全員一緒に合格。連帯責任！</footer>
+<footer style="text-align:center; margin-top:2rem; font-size:1.4em; color:#555; line-height:1.6;">
+  operated by Nakahashi<br>
+  (LINE: yuya987987)<br>
+  全員一緒に合格。連帯責任！
+</footer>
 </p>
 </body>
 </html>
+
 
 
 
