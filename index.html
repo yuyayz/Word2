@@ -154,11 +154,12 @@
     if (!selected.includes(random)) selected.push(random);
   }
 
-  const html = selected.map(card => `
-    <div class="card" onclick="showDetail('${card.word}')">
-      <div class="word">${card.word}</div>
-    </div>
-  `).join("");
+const html = selected.map(card => `
+  <div class="card" onclick="showDetail('${card.word}', '${category}')">
+    <div class="word">${card.word}</div>
+  </div>
+`).join("");
+
 
   document.getElementById("cardArea").innerHTML = html;
   document.getElementById("topArea").style.display = "none";
@@ -166,8 +167,7 @@
   document.getElementById("detailArea").style.display = "none";
     }
 
-    function showDetail(word) {
-  const category = document.getElementById("category").value;
+function showDetail(word, category) {
   let cards = [];
 
   if (category === "all") {
@@ -194,6 +194,7 @@
   document.getElementById("challengeArea").style.display = "none";
   document.getElementById("detailArea").style.display = "block";
 }
+
 
     function goBack() {
       document.getElementById("detailArea").style.display = "none";
@@ -226,6 +227,7 @@
 </p>
 </body>
 </html>
+
 
 
 
