@@ -103,7 +103,7 @@ box-sizing: border-box;
 <option value="society">社会</option>
 <option value="original">オリジナル</option>
 </select>
-<button onclick="startChallenge()">カードを表示</button>
+<button id="startBtn" onclick="startChallenge()" disabled>カードを表示</button>
 </div>
 
 <div id="cardArea"></div>
@@ -136,7 +136,7 @@ fetch("words.json")
   .then(response => response.json())
   .then(json => {
     data = json;
-    document.querySelector("button").disabled = false; // 読み込み完了後に有効化
+    document.getElementById("startBtn").disabled = false; // 読み込み完了後に有効化
   });
 
 function startChallenge() {
@@ -216,9 +216,9 @@ document.getElementById("detailArea").style.display = "none";
   (LINE: yuya987987)<br>
   全員一緒に合格。連帯責任！
 </footer>
-</p>
 </body>
 </html>
+
 
 
 
