@@ -165,12 +165,13 @@ document.getElementById("topArea").style.display = "none";
 document.getElementById("challengeArea").style.display = "block";
 document.getElementById("detailArea").style.display = "none";
 
-// 生成したカードにイベントを付与（← innerHTML の後に移動）
+// 生成したカードにイベントを付与
 const cardElements = document.querySelectorAll("#cardArea .card");
 cardElements.forEach((el, index) => {
-  el.addEventListener("click", () => showDetail(selected[index].word, category));
+  el.addEventListener("click", () => {
+    showDetail(selected[index].word, category);
+  });
 });
-    }
 
 function showDetail(word, category) {
   let cards = [];
@@ -182,11 +183,14 @@ function showDetail(word, category) {
       }
     });
   } else {
-    cards = data[category];
+    cards = data[category] || [];
   }
 
   const match = cards.find(c => c.word === word);
-  if (!match) return;
+  if (!match) {
+    console.warn("該当する単語が見つかりません:", word, category);
+    return;
+  }
 
   const html = `
     <div class="card">
@@ -232,6 +236,7 @@ function showDetail(word, category) {
 </p>
 </body>
 </html>
+
 
 
 
