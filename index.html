@@ -84,17 +84,18 @@
 
   <div id="topArea">
     <label for="category">カテゴリーを選択：</label>
-    <select id="category">
-      <option value="food">食文化</option>
-      <option value="history">歴史</option>
-      <option value="tourism">観光</option>
-      <option value="events">年中行事</option>
-      <option value="religion">宗教</option>
-      <option value="arts">芸術</option>
-      <option value="crafts">工芸</option>
-      <option value="society">社会</option>
-      <option value="original">オリジナル</option>
-    </select>
+<select id="category">
+  <option value="all">全部</option>
+  <option value="food">食文化</option>
+  <option value="history">歴史</option>
+  <option value="tourism">観光</option>
+  <option value="events">年中行事</option>
+  <option value="religion">宗教</option>
+  <option value="arts">芸術</option>
+  <option value="crafts">工芸</option>
+  <option value="society">社会</option>
+  <option value="original">オリジナル</option>
+</select>
     <button onclick="startChallenge()">カードを表示</button>
   </div>
 
@@ -112,88 +113,101 @@
     <button onclick="goToTop()">トップに戻る</button>
   </div>
 
-  <script>
-    let data = {};
-    const examDate = new Date("2025-12-14");
+<script>
+  let data = {};
+  const examDate = new Date("2025-12-14");
 
-    function updateCountdown() {
-      const today = new Date();
-      const diff = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-      document.getElementById("countdown").textContent = `本番(12/14)まであと ${diff} 日`;
+  function updateCountdown() {
+    const today = new Date();
+    const diff = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+    document.getElementById("countdown").textContent = `本番(12/14)まであと ${diff} 日`;
+  }
+
+  updateCountdown();
+
+  fetch("words.json")
+    .then(response => response.json())
+    .then(json => {
+      data = json;
+    });
+
+  // 追加：カテゴリーに応じてカード配列を返す共通関数
+  function getCardsForCategory(category) {
+    if (!data || Object.keys(data).length === 0) return [];
+
+    if (category === "all") {
+      // すべてのカテゴリーをフラットに結合
+      return Object.keys(data).reduce((acc, key) => {
+        if (Array.isArray(data[key])) acc.push(...data[key]);
+        return acc;
+      }, []);
+    }
+    return Array.isArray(data[category]) ? data[category] : [];
+  }
+
+  function startChallenge() {
+    const category = document.getElementById("category").value;
+    const cards = getCardsForCategory(category);
+    if (!cards || cards.length === 0) return;
+
+    const selected = [];
+    while (selected.length < 3 && selected.length < cards.length) {
+      const random = cards[Math.floor(Math.random() * cards.length)];
+      // 同一参照重複を避ける
+      if (!selected.includes(random)) selected.push(random);
     }
 
-    updateCountdown();
+    const html = selected.map(card => `
+      <div class="card" onclick="showDetail('${card.word}')">
+        <div class="word">${card.word}</div>
+      </div>
+    `).join("");
 
-    fetch("words.json")
-      .then(response => response.json())
-      .then(json => {
-        data = json;
-      });
+    document.getElementById("cardArea").innerHTML = html;
+    document.getElementById("topArea").style.display = "none";
+    document.getElementById("challengeArea").style.display = "block";
+    document.getElementById("detailArea").style.display = "none";
+  }
 
-    function startChallenge() {
-      const category = document.getElementById("category").value;
-      const cards = data[category];
-      if (!cards || cards.length === 0) return;
+  function showDetail(word) {
+    const category = document.getElementById("category").value;
+    const cards = getCardsForCategory(category);
+    const match = cards.find(c => c.word === word);
+    if (!match) return;
 
-      const selected = [];
-      while (selected.length < 3) {
-        const random = cards[Math.floor(Math.random() * cards.length)];
-        if (!selected.includes(random)) selected.push(random);
-      }
+    const html = `
+      <div class="card">
+        <div class="word">${match.word}</div>
+        <div class="reps">${match.reps.join("、 ")}</div>
+      </div>
+    `;
+    document.getElementById("detailCard").innerHTML = html;
+    document.getElementById("cardArea").style.display = "none";
+    document.getElementById("challengeArea").style.display = "none";
+    document.getElementById("detailArea").style.display = "block";
+  }
 
-      const html = selected.map(card => `
-        <div class="card" onclick="showDetail('${card.word}')">
-          <div class="word">${card.word}</div>
-        </div>
-      `).join("");
+  function goBack() {
+    document.getElementById("detailArea").style.display = "none";
+    document.getElementById("cardArea").style.display = "block";
+    document.getElementById("challengeArea").style.display = "block";
+  }
 
-      document.getElementById("cardArea").innerHTML = html;
-      document.getElementById("topArea").style.display = "none";
-      document.getElementById("challengeArea").style.display = "block";
-      document.getElementById("detailArea").style.display = "none";
-    }
+  function nextChallenge() {
+    document.getElementById("detailArea").style.display = "none";
+    document.getElementById("cardArea").innerHTML = "";
+    document.getElementById("cardArea").style.display = "block";
+    startChallenge();
+  }
 
-    function showDetail(word) {
-      const category = document.getElementById("category").value;
-      const cards = data[category];
-      const match = cards.find(c => c.word === word);
-      if (!match) return;
-
-      const html = `
-        <div class="card">
-          <div class="word">${match.word}</div>
-          <div class="reps">${match.reps.join("、 ")}</div>
-        </div>
-      `;
-      document.getElementById("detailCard").innerHTML = html;
-      document.getElementById("cardArea").style.display = "none";
-      document.getElementById("challengeArea").style.display = "none";
-      document.getElementById("detailArea").style.display = "block";
-    }
-
-    function goBack() {
-      document.getElementById("detailArea").style.display = "none";
-      document.getElementById("cardArea").style.display = "block";
-      document.getElementById("challengeArea").style.display = "block";
-    }
-
-    function nextChallenge() {
-      document.getElementById("detailArea").style.display = "none";
-      document.getElementById("cardArea").innerHTML = "";
-      document.getElementById("cardArea").style.display = "block";
-      startChallenge();
-    }
-
-    function goToTop() {
-  document.getElementById("cardArea").innerHTML = "";
-  document.getElementById("detailCard").innerHTML = "";
-  document.getElementById("topArea").style.display = "block";
-  document.getElementById("cardArea").style.display = "none";
-  document.getElementById("challengeArea").style.display = "none";
-  document.getElementById("detailArea").style.display = "none";
-}
-
-  </script>
+  function goToTop() {
+    document.getElementById("cardArea").innerHTML = "";
+    document.getElementById("detailCard").innerHTML = "";
+    document.getElementById("topArea").style.display = "block";
+    document.getElementById("cardArea").style.display = "none";
+    document.getElementById("challengeArea").style.display = "none";
+    document.getElementById("detailArea").style.display = "none";
+  }
   <footer style="text-align:center; margin-top:2rem; font-size: 1.6em: color: #555; line-height: 1.6;
     ">
   operated by Nakahashi<br>
@@ -202,6 +216,7 @@
 </p>
 </body>
 </html>
+
 
 
 
