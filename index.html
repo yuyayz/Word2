@@ -155,10 +155,16 @@
   }
 
 const html = selected.map(card => `
-  <div class="card" onclick="showDetail('${card.word}', '${category}')">
+  <div class="card">
     <div class="word">${card.word}</div>
   </div>
 `).join("");
+
+// 生成したカードにイベントを付与
+const cardElements = document.querySelectorAll("#cardArea .card");
+cardElements.forEach((el, index) => {
+  el.addEventListener("click", () => showDetail(selected[index].word, category));
+});
 
 
   document.getElementById("cardArea").innerHTML = html;
@@ -227,6 +233,7 @@ function showDetail(word, category) {
 </p>
 </body>
 </html>
+
 
 
 
