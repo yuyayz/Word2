@@ -160,17 +160,16 @@ const html = selected.map(card => `
   </div>
 `).join("");
 
-// 生成したカードにイベントを付与
+document.getElementById("cardArea").innerHTML = html;
+document.getElementById("topArea").style.display = "none";
+document.getElementById("challengeArea").style.display = "block";
+document.getElementById("detailArea").style.display = "none";
+
+// 生成したカードにイベントを付与（← innerHTML の後に移動）
 const cardElements = document.querySelectorAll("#cardArea .card");
 cardElements.forEach((el, index) => {
   el.addEventListener("click", () => showDetail(selected[index].word, category));
 });
-
-
-  document.getElementById("cardArea").innerHTML = html;
-  document.getElementById("topArea").style.display = "none";
-  document.getElementById("challengeArea").style.display = "block";
-  document.getElementById("detailArea").style.display = "none";
     }
 
 function showDetail(word, category) {
@@ -233,6 +232,7 @@ function showDetail(word, category) {
 </p>
 </body>
 </html>
+
 
 
 
