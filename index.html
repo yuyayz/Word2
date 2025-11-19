@@ -94,6 +94,7 @@
       <option value="crafts">工芸</option>
       <option value="society">社会</option>
       <option value="original">オリジナル</option>
+      <option value="all">全部</option>
     </select>
     <button onclick="startChallenge()">カードを表示</button>
   </div>
@@ -131,26 +132,38 @@
       });
 
     function startChallenge() {
-      const category = document.getElementById("category").value;
-      const cards = data[category];
-      if (!cards || cards.length === 0) return;
+  const category = document.getElementById("category").value;
+  let cards = [];
 
-      const selected = [];
-      while (selected.length < 3) {
-        const random = cards[Math.floor(Math.random() * cards.length)];
-        if (!selected.includes(random)) selected.push(random);
+  if (category === "all") {
+    // 全カテゴリーをまとめる
+    Object.keys(data).forEach(cat => {
+      if (Array.isArray(data[cat])) {
+        cards = cards.concat(data[cat]);
       }
+    });
+  } else {
+    cards = data[category];
+  }
 
-      const html = selected.map(card => `
-        <div class="card" onclick="showDetail('${card.word}')">
-          <div class="word">${card.word}</div>
-        </div>
-      `).join("");
+  if (!cards || cards.length === 0) return;
 
-      document.getElementById("cardArea").innerHTML = html;
-      document.getElementById("topArea").style.display = "none";
-      document.getElementById("challengeArea").style.display = "block";
-      document.getElementById("detailArea").style.display = "none";
+  const selected = [];
+  while (selected.length < 3 && selected.length < cards.length) {
+    const random = cards[Math.floor(Math.random() * cards.length)];
+    if (!selected.includes(random)) selected.push(random);
+  }
+
+  const html = selected.map(card => `
+    <div class="card" onclick="showDetail('${card.word}')">
+      <div class="word">${card.word}</div>
+    </div>
+  `).join("");
+
+  document.getElementById("cardArea").innerHTML = html;
+  document.getElementById("topArea").style.display = "none";
+  document.getElementById("challengeArea").style.display = "block";
+  document.getElementById("detailArea").style.display = "none";
     }
 
     function showDetail(word) {
@@ -202,6 +215,7 @@
 </p>
 </body>
 </html>
+
 
 
 
